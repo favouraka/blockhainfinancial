@@ -1,0 +1,23 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.pricing-cards {
+    .card{
+        min-height: 250px;
+    }
+}
+
+nav.navbar{
+    position: fixed;
+    display: flex;
+    z-index: 101;
+    width: 100%;
+    height: 60px;
+    background-color: rgb(250, 250, 250);
+}
