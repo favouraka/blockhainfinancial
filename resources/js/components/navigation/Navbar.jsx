@@ -1,7 +1,11 @@
+// scripts
 import React from  'react'
+import {AuthContext} from '../globals/auth-context'
+// 
 import Logo from '../../img/LOGO.svg'
 
 function Navbar(){
+    const auth = React.useContext(AuthContext)
     return (
     <>
      <nav className="navbar shadow-lg">
@@ -18,10 +22,12 @@ function Navbar(){
                 </div>
             </div>
             {/* login signup */}
-            <div className="d-lg-block d-sm-none d-none">
-                <button className="btn btn-primary mx-3">Sign up</button>
-                <button className="btn btn-outline-primary">Log in</button>
-            </div>
+            { auth.user ? <button className="btn-outline-primary btn">Dashboard</button> : 
+                <div className="d-lg-block d-sm-none d-none">
+                    <button className="btn btn-primary mx-3">Sign up</button>
+                    <button className="btn btn-outline-primary">Log in</button>
+                </div>            
+            }
         </div>
     </nav>
     <br/>

@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Axios from 'axios'
+import {AuthContext} from './globals/auth-context'
 
 // logo 
 import Logo from '../img/LOGO.svg'
@@ -25,9 +26,34 @@ function App() {
     },[])
     //
 
-    // context for authentication
-    const AuthContext = React.createContext()
+        // 
+    const contextValue =  {
+        // user 
+        user: session.user,
 
+        // login method of context 
+        login: function(data){
+            axios.get('/sanctum/csrf-cookie')
+                .then( r => {
+                    axios.post('/login',{
+                        email: data.email,
+                        password: data.password
+                    })
+                    .then( r => {
+                        checkSession();
+                    })
+                })
+        },
+
+        // logout
+        logout: function(){
+            axios.post('/logout')
+                .then( r => {
+                    checkSession()
+                })
+        }
+
+    }
     // 
     const checkSession = () => {
         Axios.get('/api/user')
@@ -46,15 +72,17 @@ function App() {
     // display app if sessioncheck state is true 
     if(session.checked){
         return (
-            <Switch>
-               <Route path="/" exact>
-                    <div className="d-flex flex-column background">
-                        <Navbar></Navbar>
-                        <Home/>
-                        <Footer></Footer>
-                    </div>
-                </Route> 
-            </Switch>
+            <AuthContext.Provider value={contextValue}>
+                <Switch>
+                <Route path="/" exact>
+                        <div className="d-flex flex-column background">
+                            <Navbar></Navbar>
+                            <Home/>
+                            <Footer></Footer>
+                        </div>
+                    </Route> 
+                </Switch>
+            </AuthContext.Provider>
         );
     } else {
         // else display splash if sessioncheck is not loaded
