@@ -45,7 +45,7 @@ export default function Home(){
     <div className="container">
         <div className="jumbotron bg-transparent">
             <div className="row">
-                <div className="col-sm-12 col-md-8 col lg-6">
+                <div className="col-sm-12 col-md-8 col-lg-6">
                     <p className="display-4">Invest in the <span className=" text-primary">blockchain revolution</span></p>
                     <p className="lead text-muted">
                         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iste laudantium quae quis,
