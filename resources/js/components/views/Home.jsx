@@ -57,7 +57,7 @@ export default function Home(){
                         <button className="btn btn-outline-dark">See pricing</button>
                     </div>
                 </div>
-                <div className="col-sm-12">
+                <div className="col-sm-12 col-md-4 col-lg-6">
                     <picture>
                         <img src="" alt="hero-illustration-landing-page"/>
                     </picture>
