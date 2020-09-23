@@ -33,6 +33,8 @@ function App() {
 
         // login method of context 
         login: function(data){
+            this.errors = null
+            // 
             axios.get('/sanctum/csrf-cookie')
                 .then( r => {
                     axios.post('/login',{
@@ -41,6 +43,9 @@ function App() {
                     })
                     .then( r => {
                         checkSession();
+                    }).catch( e => {
+                        // handle exceptions 
+                        this.errors = e.errors
                     })
                 })
         },
@@ -51,7 +56,10 @@ function App() {
                 .then( r => {
                     checkSession()
                 })
-        }
+        },
+
+        // errors during authentication
+        errors: null
 
     }
     // 
@@ -77,9 +85,9 @@ function App() {
                     <HomeRoute path="/" exact>
                         <Home/>
                     </HomeRoute> 
-                    <HomeRoute path="/login">
+                    <AccessRoute path="/login">
                         <Login/>
-                    </HomeRoute>
+                    </AccessRoute>
                 </Switch>
             </AuthContext.Provider>
         );
@@ -110,6 +118,28 @@ function HomeRoute({children, ...rest}){
     return <Route {...rest} render={Children}></Route>
 }
 
+// logical routes for login and sign up
+function AccessRoute({children, ...rest}){
+    const auth = React.useContext(AuthContext)
+    const View =()=> {
+        return (
+            <div className="d-flex flex-column background">
+                <Navbar></Navbar>
+                {children}
+                <Footer></Footer>
+            </div>
+        )
+    }
+    
+    if(auth.user){
+        // if user is logged in redirect to dashboard 
+        return <Redirect to="/dashboard"></Redirect>
+    } else {
+        return <Route {...rest} render={View}></Route>
+    }
+}
+
+// login page
 function Login(){
     const auth = React.useContext(AuthContext)
     const [loginData, setLoginData] = React.useState({
@@ -117,37 +147,32 @@ function Login(){
         password: ''
     })
 
-    if(auth.user){
-        // if user is logged in redirect to dashboard 
-        return <Redirect to="/dashboard"></Redirect>
-    } else {
-        return (
-            <div className="container">
-                <br/><br/>
-                <div className="row justify-content-center">
-                    <div className="col-md-6">
-                        <div className="card shadow">
-                            <div className="card-body">
-                                <h4 className="text-muted">Please login to continue</h4>
-                                <form action="#" onSubmit={() => {auth.login(loginData)} }>
-                                    <div className="form-group d-flex flex-column">
-                                        <div className="label">Email:</div>
-                                        <input type="text" onChange={(e)=> {setLoginData({...loginData, email: e.target.value})}} />
-                                    </div>
-                                    <div className="form-group d-flex flex-column">
-                                        <div className="label">Password</div>
-                                        <input type="password" onChange={(e)=> {setLoginData({...loginData, password: e.target.value})}} />
-                                    </div>
-                                    {/*  */}
-                                    <button className="btn btn-block btn-primary">Log in</button>
-                                </form>
-                            </div>
+    return (
+        <div className="container">
+            <br/><br/>
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card shadow">
+                        <div className="card-body">
+                            <h4 className="text-muted">Please login to continue</h4>
+                            <form action="#" onSubmit={(e) => {auth.login(loginData); e.preventDefault()} }>
+                                <div className="form-group d-flex flex-column">
+                                    <div className="label">Email:</div>
+                                    <input required type="email" onChange={(e)=> {setLoginData({...loginData, email: e.target.value})}} />
+                                </div>
+                                <div className="form-group d-flex flex-column">
+                                    <div className="label">Password</div>
+                                    <input required type="password" onChange={(e)=> {setLoginData({...loginData, password: e.target.value})}} />
+                                </div>
+                                {/*  */}
+                                <button type="submit" className="btn btn-block btn-primary">Log in</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 export default App;

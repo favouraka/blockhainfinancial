@@ -69943,12 +69943,19 @@ function App() {
     user: session.user,
     // login method of context 
     login: function login(data) {
+      var _this = this;
+
+      this.errors = null; // 
+
       axios.get('/sanctum/csrf-cookie').then(function (r) {
         axios.post('/login', {
           email: data.email,
           password: data.password
         }).then(function (r) {
           checkSession();
+        })["catch"](function (e) {
+          // handle exceptions 
+          _this.errors = e.errors;
         });
       });
     },
@@ -69957,7 +69964,9 @@ function App() {
       axios.post('/logout').then(function (r) {
         checkSession();
       });
-    }
+    },
+    // errors during authentication
+    errors: null
   }; // 
 
   var checkSession = function checkSession() {
@@ -69984,7 +69993,7 @@ function App() {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Switch"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HomeRoute, {
       path: "/",
       exact: true
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_views_Home__WEBPACK_IMPORTED_MODULE_8__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HomeRoute, {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_views_Home__WEBPACK_IMPORTED_MODULE_8__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AccessRoute, {
       path: "/login"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Login, null))));
   } else {
@@ -70019,7 +70028,33 @@ function HomeRoute(_ref) {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Route"], _extends({}, rest, {
     render: Children
   }));
-}
+} // logical routes for login and sign up
+
+
+function AccessRoute(_ref2) {
+  var children = _ref2.children,
+      rest = _objectWithoutProperties(_ref2, ["children"]);
+
+  var auth = react__WEBPACK_IMPORTED_MODULE_0___default.a.useContext(_globals_auth_context__WEBPACK_IMPORTED_MODULE_4__["AuthContext"]);
+
+  var View = function View() {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "d-flex flex-column background"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_navigation_Navbar__WEBPACK_IMPORTED_MODULE_6__["default"], null), children, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_navigation_Footer__WEBPACK_IMPORTED_MODULE_7__["default"], null));
+  };
+
+  if (auth.user) {
+    // if user is logged in redirect to dashboard 
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Redirect"], {
+      to: "/dashboard"
+    });
+  } else {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Route"], _extends({}, rest, {
+      render: View
+    }));
+  }
+} // login page
+
 
 function Login() {
   var auth = react__WEBPACK_IMPORTED_MODULE_0___default.a.useContext(_globals_auth_context__WEBPACK_IMPORTED_MODULE_4__["AuthContext"]);
@@ -70032,55 +70067,52 @@ function Login() {
       loginData = _React$useState4[0],
       setLoginData = _React$useState4[1];
 
-  if (auth.user) {
-    // if user is logged in redirect to dashboard 
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Redirect"], {
-      to: "/dashboard"
-    });
-  } else {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "container"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "row justify-content-center"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "col-md-6"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "card shadow"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "card-body"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
-      className: "text-muted"
-    }, "Please login to continue"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
-      action: "#",
-      onSubmit: function onSubmit() {
-        auth.login(loginData);
-      }
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "form-group d-flex flex-column"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "label"
-    }, "Email:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-      type: "text",
-      onChange: function onChange(e) {
-        setLoginData(_objectSpread(_objectSpread({}, loginData), {}, {
-          email: e.target.value
-        }));
-      }
-    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "form-group d-flex flex-column"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "label"
-    }, "Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-      type: "password",
-      onChange: function onChange(e) {
-        setLoginData(_objectSpread(_objectSpread({}, loginData), {}, {
-          password: e.target.value
-        }));
-      }
-    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      className: "btn btn-block btn-primary"
-    }, "Log in")))))));
-  }
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "row justify-content-center"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "card shadow"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "card-body"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
+    className: "text-muted"
+  }, "Please login to continue"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+    action: "#",
+    onSubmit: function onSubmit(e) {
+      auth.login(loginData);
+      e.preventDefault();
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "form-group d-flex flex-column"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "label"
+  }, "Email:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    required: true,
+    type: "email",
+    onChange: function onChange(e) {
+      setLoginData(_objectSpread(_objectSpread({}, loginData), {}, {
+        email: e.target.value
+      }));
+    }
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "form-group d-flex flex-column"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "label"
+  }, "Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    required: true,
+    type: "password",
+    onChange: function onChange(e) {
+      setLoginData(_objectSpread(_objectSpread({}, loginData), {}, {
+        password: e.target.value
+      }));
+    }
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "submit",
+    className: "btn btn-block btn-primary"
+  }, "Log in")))))));
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (App);
@@ -70155,6 +70187,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function Navbar() {
   var auth = react__WEBPACK_IMPORTED_MODULE_0___default.a.useContext(_globals_auth_context__WEBPACK_IMPORTED_MODULE_1__["AuthContext"]);
+  var history = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["useHistory"])();
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("nav", {
     className: "navbar shadow-lg"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -70171,6 +70204,9 @@ function Navbar() {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
     src: _img_LOGO_svg__WEBPACK_IMPORTED_MODULE_3___default.a,
     alt: "blockchain-financial-logo",
+    onClick: function onClick() {
+      history.push('/');
+    },
     width: "150px"
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "d-lg-flex flex-row ml-3 d-sm-none d-none",
