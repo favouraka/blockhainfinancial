@@ -1,7 +1,7 @@
 // scripts 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import Axios from 'axios'
 import {AuthContext} from './globals/auth-context'
 
@@ -74,13 +74,12 @@ function App() {
         return (
             <AuthContext.Provider value={contextValue}>
                 <Switch>
-                <Route path="/" exact>
-                        <div className="d-flex flex-column background">
-                            <Navbar></Navbar>
-                            <Home/>
-                            <Footer></Footer>
-                        </div>
-                    </Route> 
+                    <HomeRoute path="/" exact>
+                        <Home/>
+                    </HomeRoute> 
+                    <HomeRoute path="/login">
+                        <Login/>
+                    </HomeRoute>
                 </Switch>
             </AuthContext.Provider>
         );
@@ -93,6 +92,61 @@ function App() {
                 </div>
             </div>
         );
+    }
+}
+
+// routing for non protected routes 
+function HomeRoute({children, ...rest}){
+    const Children = () => {
+        return (
+            <div className="d-flex flex-column background">
+                <Navbar></Navbar>
+                {children}
+                <Footer></Footer>
+            </div>
+        )
+    }
+
+    return <Route {...rest} render={Children}></Route>
+}
+
+function Login(){
+    const auth = React.useContext(AuthContext)
+    const [loginData, setLoginData] = React.useState({
+        email: '',
+        password: ''
+    })
+
+    if(auth.user){
+        // if user is logged in redirect to dashboard 
+        return <Redirect to="/dashboard"></Redirect>
+    } else {
+        return (
+            <div className="container">
+                <br/><br/>
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <div className="card shadow">
+                            <div className="card-body">
+                                <h4 className="text-muted">Please login to continue</h4>
+                                <form action="#" onSubmit={() => {auth.login(loginData)} }>
+                                    <div className="form-group d-flex flex-column">
+                                        <div className="label">Email:</div>
+                                        <input type="text" onChange={(e)=> {setLoginData({...loginData, email: e.target.value})}} />
+                                    </div>
+                                    <div className="form-group d-flex flex-column">
+                                        <div className="label">Password</div>
+                                        <input type="password" onChange={(e)=> {setLoginData({...loginData, password: e.target.value})}} />
+                                    </div>
+                                    {/*  */}
+                                    <button className="btn btn-block btn-primary">Log in</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 }
 
