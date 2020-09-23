@@ -130,13 +130,8 @@ function AccessRoute({children, ...rest}){
             </div>
         )
     }
-    
-    if(auth.user){
-        // if user is logged in redirect to dashboard 
-        return <Redirect to="/dashboard"></Redirect>
-    } else {
-        return <Route {...rest} render={View}></Route>
-    }
+
+    return <Route {...rest} render={() => (auth.user) ? <Redirect to="/dashboard"></Redirect> : <View/> }></Route>
 }
 
 // login page
